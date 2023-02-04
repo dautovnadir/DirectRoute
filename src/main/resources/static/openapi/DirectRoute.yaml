@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: Прямой маршрут
+  description: >
+    `Design First`
+  version: 1.0.0
+  contact:
+    name: Direct Route Team
+    url: https://wiki.example.ru/team/Direct+Route+Team
+    email: DIRECT_ROUTE_TEAM@example.ru
+servers:
+  - url: /api
+    description: Starting path of servers url
+tags:
+  - name: Direct Route
+    description: Прямой маршрут
+paths:
+  /direct:
+    parameters:
+      - $ref: '#/components/parameters/from'
+      - $ref: '#/components/parameters/to'
+    get:
+      summary: Имеется ли беспересадочный маршрут
+      operationId: directRouteFromTo
+      tags:
+        - Direct Route
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectRouteResponse'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    from:
+      name: from
+      description: Номер начальной автобусной остановки
+      in: query
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 2147483647
+      required: true
+    to:
+      name: to
+      description: Номер конечной автобусной остановки
+      in: query
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 2147483647
+      required: true
+  schemas:
+    DirectRouteResponse:
+      type: object
+      properties:
+        from:
+          type: integer
+          format: int32
+          description: Номер начальной остановки
+        to:
+          type: integer
+          format: int32
+          description: Номер конечной остановки
+        direct:
+          type: boolean
+          description: true - имеется маршурт, false - не имеется
+  responses:
+    #500
+    InternalServerError:
+      description: Internal Server Error
